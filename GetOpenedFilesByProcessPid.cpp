@@ -3,6 +3,8 @@
 #include <string.h>
 #include <tchar.h>
 #include <iostream>
+#include <FileAPI.h>
+#include <WinBase.h>
 
 #define START_ALLOC                 0x1000
 #define STATUS_INFO_LENGTH_MISMATCH 0xC0000004
@@ -58,14 +60,16 @@ int main(int argc, char *argv[])
 
 	hCount = *(ULONG*)pMem;
 	hFirstEntry = (PSYSTEM_HANDLE_ENTRY)((PBYTE)pMem + 4);
+
 	int pid = atoi(argv[1]);
+
 	for (i = 0; i < hCount; ++i)
 	if ((hFirstEntry[i].ObjectType == 30) && (hFirstEntry[i].OwnerPid == pid))
 	{
 		HANDLE TargetHandleValueTemp = (HANDLE)hFirstEntry[i].HandleValue;
 		HANDLE SourceProcHandleTemp = OpenProcess(PROCESS_DUP_HANDLE, FALSE, hFirstEntry[i].OwnerPid);
 
-		if (!DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, DUPLICATE_SAME_ACCESS))
+		if (!DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, (argv[3] ? DUPLICATE_CLOSE_SOURCE : DUPLICATE_SAME_ACCESS)))
 		{
 			TargetHandleValueTemp = (HANDLE)hFirstEntry[i].HandleValue;
 		}
@@ -73,7 +77,9 @@ int main(int argc, char *argv[])
 		CloseHandle(SourceProcHandleTemp);
 		TCHAR Path[MAX_PATH];
 		DWORD dwret = GetFinalPathNameByHandle(TargetHandleValueTemp, Path, MAX_PATH, 0);
-		_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n"), hFirstEntry[i].OwnerPid, TargetHandleValueTemp, Path);
+		if (_tcsstr(Path, _T(argv[2])))
+			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n"), hFirstEntry[i].OwnerPid, TargetHandleValueTemp, Path);
+			
 		CloseHandle(TargetHandleValueTemp);
 	}
 
