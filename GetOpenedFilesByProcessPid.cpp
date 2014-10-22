@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 		DWORD dwret = GetFinalPathNameByHandle(TargetHandleValueTemp, Path, MAX_PATH, 0);
 		if (!argv[2])
 		{
-			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n"), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
+			_tprintf(TEXT("Original file Handle descryptor: %d\tThe final path is: %s\n"), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
 		}
 		else if (_tcsstr(Path, _T(argv[2])))
 		{
