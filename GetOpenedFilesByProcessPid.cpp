@@ -76,10 +76,14 @@ int main(int argc, char *argv[])
 		
 		TCHAR Path[MAX_PATH];
 		DWORD dwret = GetFinalPathNameByHandle(TargetHandleValueTemp, Path, MAX_PATH, 0);
-		if (_tcsstr(Path, _T(argv[2])))
+		if (!argv[2])
 		{
-			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n\tRemove it(y/n)?"), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
-			flushall();
+			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n"), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
+		}
+		else if (_tcsstr(Path, _T(argv[2])))
+		{
+			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n\t Remove it? (y/n): "), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
+			_flushall();
 			std::cin.get(confirm);
 			if (confirm == 'y')
 				DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, DUPLICATE_CLOSE_SOURCE);
