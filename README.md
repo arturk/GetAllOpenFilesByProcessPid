@@ -12,6 +12,7 @@ OpenedFilesByProcess.exe [ProcesID]
 
 To start removing file handles from the process (emulating hard drive or OS malfunction add the file name (you may use not the full path) as second parameter and chose 'y' when it promts to remove necessary file).
 OpenedFilesByProcess.exe [ProcesID] [FileName]
+
 OpenedFilesByProcess.exe 5628 main.db
 
 Warning:
