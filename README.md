@@ -18,6 +18,10 @@ To start removing file handles from the process (emulating hard drive or OS malf
 Example
 
     OpenedFilesByProcess.exe 5628 main.db
+    
+Cygwin example:
+
+    $ OpenedFilesByProcess.exe `ps -W | grep Skype.exe | awk '/[0-9]+/ { print $1 }'`
 
 #Warning:
 
