@@ -5,6 +5,8 @@
 #include <iostream>
 #include <FileAPI.h>
 #include <WinBase.h>
+#include <conio.h>
+#include <ctype.h>
 
 #define START_ALLOC                 0x1000
 #define STATUS_INFO_LENGTH_MISMATCH 0xC0000004
@@ -68,18 +70,22 @@ int main(int argc, char *argv[])
 	{
 		HANDLE TargetHandleValueTemp = (HANDLE)hFirstEntry[i].HandleValue;
 		HANDLE SourceProcHandleTemp = OpenProcess(PROCESS_DUP_HANDLE, FALSE, hFirstEntry[i].OwnerPid);
+		char confirm ='n';
 
-		if (!DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, (argv[3] ? DUPLICATE_CLOSE_SOURCE : DUPLICATE_SAME_ACCESS)))
-		{
-			TargetHandleValueTemp = (HANDLE)hFirstEntry[i].HandleValue;
-		}
+		DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, DUPLICATE_SAME_ACCESS);
 		
-		CloseHandle(SourceProcHandleTemp);
 		TCHAR Path[MAX_PATH];
 		DWORD dwret = GetFinalPathNameByHandle(TargetHandleValueTemp, Path, MAX_PATH, 0);
 		if (_tcsstr(Path, _T(argv[2])))
-			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n"), hFirstEntry[i].OwnerPid, TargetHandleValueTemp, Path);
-			
+		{
+			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n\tRemove it(y/n)?"), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
+			flushall();
+			std::cin.get(confirm);
+			if (confirm == 'y')
+				DuplicateHandle(SourceProcHandleTemp, (HANDLE)hFirstEntry[i].HandleValue, GetCurrentProcess(), &TargetHandleValueTemp, 0, FALSE, DUPLICATE_CLOSE_SOURCE);
+		}
+
+		CloseHandle(SourceProcHandleTemp);
 		CloseHandle(TargetHandleValueTemp);
 	}
 
