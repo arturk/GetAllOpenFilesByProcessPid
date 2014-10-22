@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 		}
 		else if (_tcsstr(Path, _T(argv[2])))
 		{
-			_tprintf(TEXT("PID: %d\tFileHandle: %d\tThe final path is: %s\n\t Remove it? (y/n): "), hFirstEntry[i].HandleValue, TargetHandleValueTemp, Path);
+			_tprintf(TEXT("Original file Handle descryptor: %d\tThe final path is: %s\n\t Remove it? (y/n): "), hFirstEntry[i].HandleValue, Path);
 			_flushall();
 			std::cin.get(confirm);
 			if (confirm == 'y')
